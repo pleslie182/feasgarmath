@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>feasgar math</title>
+    <style>
+        :root {
+            --bg-color: #0b0612;
+            --screen-text: #33ff33;
+            --screen-glow: rgba(51, 255, 51, 0.25);
+            --vhs-magenta: #ff007f;
+            --vhs-cyan: #00ffff;
+            --font-retro: "Courier New", Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--screen-text);
+            font-family: var(--font-retro);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 0 4px var(--screen-glow);
+        }
+
+        /* CRT Screen & Scanlines */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            z-index: 10;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* VHS Tracking Glitch Bar */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: -100%;
+            left: 0;
+            right: 0;
+            height: 15px;
+            background: rgba(51, 255, 51, 0.15);
+            opacity: 0.6;
+            filter: blur(2px);
+            z-index: 9;
+            box-shadow: 0 0 10px rgba(51, 255, 51, 0.4);
+            animation: tracking-bar 6s linear infinite;
+        }
+
+        /* Full Screen Static Overlay */
+        .vhs-static {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 8;
+            animation: static-shift 0.05s steps(2) infinite;
+        }
+
+        /* Animations */
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        @keyframes tracking-bar {
+            0% { top: -20%; }
+            10% { top: 120%; }
+            100% { top: 120%; }
+        }
+
+        @keyframes static-shift {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        @keyframes text-glitch {
+            0% { text-shadow: 1px 1px 0 var(--vhs-magenta), -1px -1px 0 var(--vhs-cyan); }
+            95% { text-shadow: 1px 1px 0 var(--vhs-magenta), -1px -1px 0 var(--vhs-cyan); }
+            96% { text-shadow: 4px -2px 0 var(--vhs-magenta), -3px 2px 0 var(--vhs-cyan); transform: skewX(-2deg); }
+            97% { text-shadow: -3px 3px 0 var(--vhs-magenta), 4px -1px 0 var(--vhs-cyan); transform: skewX(3deg); }
+            98% { text-shadow: 1px -1px 0 var(--vhs-magenta), -2px 3px 0 var(--vhs-cyan); transform: skewX(0deg); }
+            100% { text-shadow: 1px 1px 0 var(--vhs-magenta), -1px -1px 0 var(--vhs-cyan); }
+        }
+        
+        html {
+            animation: flicker 0.15s infinite;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-weight: bold;
+            z-index: 11;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            border: 2px solid var(--screen-text);
+            padding: 0.25rem 0.75rem;
+            box-shadow: 3px 3px 0px var(--screen-text);
+            animation: text-glitch 4s infinite;
+        }
+
+        .vhs-status {
+            font-size: 1rem;
+            text-align: right;
+            line-height: 1.4;
+        }
+
+        .vhs-status span {
+            display: block;
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 700px;
+            margin: 3rem 0;
+            z-index: 11;
+        }
+
+        .terminal-prompt {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
+            line-height: 1.3;
+            animation: text-glitch 5s infinite;
+        }
+
+        .archive-list {
+            list-style: none;
+        }
+
+        .archive-list li {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            width: fit-content;
+            padding: 0.2rem 0.5rem;
+            transition: all 0.1s ease;
+        }
+
+        .archive-list li:hover {
+            background-color: var(--screen-text);
+            color: var(--bg-color);
+            text-shadow: none;
+            transform: translateX(5px);
+        }
+
+        .archive-list li:hover::before {
+            content: "[x] ";
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            border-top: 2px dashed var(--screen-text);
+            padding-top: 1.5rem;
+            z-index: 11;
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        a {
+            color: var(--screen-text);
+            text-decoration: none;
+            border-bottom: 1px solid var(--screen-text);
+        }
+
+        a:hover {
+            background-color: var(--screen-text);
+            color: var(--bg-color);
+            text-shadow: none;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            header { flex-direction: column; gap: 1rem; }
+            .vhs-status { text-align: left; }
+            h1 { font-size: 1.5rem; }
+            .archive-list li { font-size: 1.1rem; }
+            footer { flex-direction: column; gap: 1rem; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="vhs-static"></div>
+
+    <header>
+        <div class="logo">FEASGAR_MATH_V1.1</div>
+        <div class="vhs-status">
+            <span>● REC</span>
+            <span>PLAY <span class="blink">▶</span></span>
+            <span>OCT 29 2026</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="terminal-prompt">C:\FEASGAR_MATH> loading_archive.exe...</div>
+        <h1>Root directory found. Initialising multi-format media deck.</h1>
+        
+        <ul class="archive-list">
+            <li>A:/CASSETTE_TAPES [MUSIC]</li>
+            <li>B:/35MM_REELS [PHOTOGRAPHY]</li>
+            <li>C:/ZINES_PRINT.TXT [ZINES]</li>
+            <li>D:/VHS_LOOPS.MOV [VIDEO]</li>
+            <li>E:/RAW_HTML_DEV [WEB_DESIGN]</li>
+        </ul>
+    </main>
+
+    <footer>
+        <div>&copy; 1995-2026 FEASGAR MATH ALL RIGHTS RESERVED</div>
+        <div>CONTACT: <a href="mailto:hello@feasgarmath.com">SYS_ADMIN</a></div>
+    </footer>
+
+</body>
+</html>
